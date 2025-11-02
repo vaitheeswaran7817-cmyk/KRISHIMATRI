@@ -1,21 +1,17 @@
-// SmartFarmingApp.tsx
-// Smart Farming AI Assistant - Complete Single File Implementation
-// Features: 6 AI Modules, Multilingual Support (6 Indian Languages), Glassmorphic Design
-import React, { useState, useRef, useEffect } from "react";
-import { Camera, Sparkles, Video, Music, Globe, Search, Leaf, Menu, Send, Upload, User, Bot, X, Plus } from "lucide-react";
-/* ============================================================
-   TYPE DEFINITIONS & SHARED SCHEMA
-   ============================================================ */
-export const languages = {
+import React, { useState } from 'react';
+import { Camera, Sparkles, Video, Music, Globe, Search, Leaf, Menu, X, Upload, Send, Loader } from 'lucide-react';
+
+// Shared Schema
+const languages = {
   english: { name: "English", code: "en" },
   tamil: { name: "தமிழ்", code: "ta" },
   hindi: { name: "हिंदी", code: "hi" },
   telugu: { name: "తెలుగు", code: "te" },
   kannada: { name: "ಕನ್ನಡ", code: "kn" },
   malayalam: { name: "മലയാളം", code: "ml" },
-} as const;
-export type Language = keyof typeof languages;
-export const cropDatabase = {
+};
+
+const cropDatabase = {
   Rice: {
     names: { en: "Rice", hi: "चावल", ta: "அரிசி", te: "బియ్యం", kn: "ಅಕ್ಕಿ", ml: "അരി" },
     season: "Kharif/Rabi",
@@ -70,373 +66,230 @@ export const cropDatabase = {
     water: "High",
     soil: "Deep loamy soil",
   },
-} as const;
-export type CropName = keyof typeof cropDatabase;
-export interface Message {
-  id: number;
-  type: "user" | "bot";
-  content: string;
-  data?: any;
-  timestamp: Date;
-}
-export interface ModuleColors {
-  gradient: string;
-  bg: string;
-  border: string;
-  text: string;
-}
-/* ============================================================
-   LANGUAGE SELECTOR COMPONENT
-   ============================================================ */
-interface LanguageSelectorProps {
-  selectedLanguage: Language;
-  onLanguageChange: (language: Language) => void;
-}
-function LanguageSelector({ selectedLanguage, onLanguageChange }: LanguageSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white flex items-center justify-between hover:bg-white/20 transition-all"
-      >
-        <div className="flex items-center space-x-2">
-          <Globe className="h-4 w-4" />
-          <span>{languages[selectedLanguage].name}</span>
-        </div>
-        <span className="text-white/60">▼</span>
-      </button>
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg overflow-hidden z-50">
-          {Object.entries(languages).map(([key, lang]) => (
-            <button
-              key={key}
-              onClick={() => {
-                onLanguageChange(key as Language);
-                setIsOpen(false);
-              }}
-              className="w-full px-4 py-2 text-left text-white hover:bg-white/10 transition-all"
-            >
-              {lang.name}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-/* ============================================================
-   CROP SELECTOR COMPONENT
-   ============================================================ */
-interface CropSelectorProps {
-  selectedCrops: CropName[];
-  selectedLanguage: Language;
-  onAddCrop: (crop: CropName) => void;
-  onRemoveCrop: (crop: CropName) => void;
-}
-function CropSelector({ selectedCrops, selectedLanguage, onAddCrop, onRemoveCrop }: CropSelectorProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const filteredCrops = (Object.keys(cropDatabase) as CropName[]).filter((crop) => {
-    const cropData = cropDatabase[crop];
-    const currentLang = languages[selectedLanguage].code;
-    return (
-      cropData.names[currentLang].toLowerCase().includes(searchTerm.toLowerCase()) ||
-      crop.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-  return (
-    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 h-full flex flex-col">
-      <h3 className="text-lg font-bold text-white mb-3">Select Your Crops</h3>
-      <div className="relative mb-3">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/60" />
-        <input
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search crops..."
-          className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/60"
-        />
-      </div>
-      {selectedCrops.length > 0 && (
-        <div className="mb-3">
-          <p className="text-sm text-white/80 mb-2">Selected Crops</p>
-          <div className="flex flex-wrap gap-2">
-            {selectedCrops.map((crop) => (
-              <span
-                key={crop}
-                className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-full text-sm flex items-center gap-1"
-              >
-                {cropDatabase[crop].names[languages[selectedLanguage].code]}
-                <button onClick={() => onRemoveCrop(crop)} className="hover:bg-white/20 rounded-full p-0.5">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar">
-        {filteredCrops
-          .filter((crop) => !selectedCrops.includes(crop))
-          .map((crop) => {
-            const cropData = cropDatabase[crop];
-            return (
-              <button
-                key={crop}
-                onClick={() => {
-                  onAddCrop(crop);
-                  setSearchTerm("");
-                }}
-                className="w-full text-left p-3 bg-white/5 border border-white/20 rounded-lg hover:bg-white/10 transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold text-white">{cropData.names[languages[selectedLanguage].code]}</h4>
-                    <p className="text-sm text-white/70">
-                      {cropData.season} • {cropData.category}
-                    </p>
-                  </div>
-                  <Plus className="h-5 w-5 text-white/60" />
-                </div>
-              </button>
-            );
-          })}
-      </div>
-    </div>
-  );
-}
-/* ============================================================
-   MODULE CARD COMPONENT
-   ============================================================ */
-interface ModuleCardProps {
-  id: string;
-  name: string;
-  icon: any;
-  description: string;
-  colorScheme: ModuleColors;
-  isActive: boolean;
-  onClick: () => void;
-}
-function ModuleCard({ id, name, icon: Icon, description, colorScheme, isActive, onClick }: ModuleCardProps) {
-  return (
-    <div
-      onClick={onClick}
-      className={`bg-white/10 backdrop-blur-sm border cursor-pointer transition-all hover:bg-white/20 rounded-2xl p-6 ${
-        isActive ? `border-2 ${colorScheme.border} shadow-lg` : "border-white/20"
-      }`}
+};
+
+// Language Selector Component
+const LanguageSelector = ({ selectedLanguage, onLanguageChange }) => (
+  <div className="space-y-2">
+    <label className="text-sm font-medium text-white/90">Language</label>
+    <select
+      value={selectedLanguage}
+      onChange={(e) => onLanguageChange(e.target.value)}
+      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
     >
-      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center mb-4 shadow-lg`}>
-        <Icon className="h-8 w-8 text-white" />
-      </div>
-      <h3 className="text-lg font-bold text-white mb-2">{name}</h3>
-      <p className="text-sm text-white/70">{description}</p>
-    </div>
+      {Object.entries(languages).map(([key, lang]) => (
+        <option key={key} value={key} className="bg-gray-900">
+          {lang.name}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+// Crop Selector Component
+const CropSelector = ({ selectedCrops, selectedLanguage, onAddCrop, onRemoveCrop }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const langCode = languages[selectedLanguage].code;
+
+  const filteredCrops = Object.entries(cropDatabase).filter(([name, crop]) =>
+    crop.names[langCode].toLowerCase().includes(searchTerm.toLowerCase())
   );
-}
-/* ============================================================
-   MESSAGE BUBBLE COMPONENT
-   ============================================================ */
-interface MessageBubbleProps {
-  message: Message;
-  colorScheme: ModuleColors;
-  moduleId: string;
-}
-function MessageBubble({ message, colorScheme, moduleId }: MessageBubbleProps) {
+
   return (
-    <div className={`flex ${message.type === "user" ? "justify-end" : "justify-start"} mb-4`}>
-      <div className={`flex items-start space-x-3 max-w-3xl ${message.type === "user" ? "flex-row-reverse space-x-reverse" : ""}`}>
-        <div
-          className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-            message.type === "user" ? "bg-blue-500 shadow-lg" : `bg-gradient-to-br ${colorScheme.gradient} shadow-lg`
-          }`}
-        >
-          {message.type === "user" ? <User className="h-5 w-5 text-white" /> : <Bot className="h-5 w-5 text-white" />}
-        </div>
-        <div
-          className={`rounded-2xl p-4 backdrop-blur-sm ${
-            message.type === "user" ? "bg-blue-500/30 border border-blue-400/40 shadow-lg" : `${colorScheme.bg} border ${colorScheme.border} shadow-lg`
-          }`}
-        >
-          <div className="text-white whitespace-pre-line">{message.content}</div>
-          {message.data && moduleId === "image-analysis" && (
-            <div className="mt-4 space-y-3">
-              <div className="bg-white/10 rounded-xl p-4 border border-white/20 backdrop-blur-sm">
-                <h4 className="font-bold text-white mb-2">Analysis Results</h4>
-                <p className="text-sm text-gray-200 mb-3">{message.data.caption}</p>
-                <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="bg-white/10 rounded-lg p-2 backdrop-blur-sm">
-                    <div className="text-xl font-bold text-green-300">{message.data.health}</div>
-                    <div className="text-xs text-gray-300">Crop Health</div>
-                  </div>
-                  <div className="bg-white/10 rounded-lg p-2 backdrop-blur-sm">
-                    <div className="text-xl font-bold text-blue-300">{message.data.soil_health}</div>
-                    <div className="text-xs text-gray-300">Soil Health</div>
-                  </div>
-                </div>
-              </div>
-              {message.data.diseases?.map((disease: any, idx: number) => (
-                <div key={idx} className="bg-red-500/20 rounded-xl p-4 border border-red-400/30 backdrop-blur-sm">
-                  <div className="flex justify-between items-start mb-2">
-                    <h5 className="font-semibold text-red-200">{disease.name}</h5>
-                    <span className="px-2 py-1 bg-red-500/30 text-red-100 rounded-full text-xs">{disease.severity}</span>
-                  </div>
-                  <p className="text-sm text-gray-200">
-                    <strong>Confidence:</strong> {disease.confidence}%
-                  </p>
-                  <p className="text-sm text-gray-200">
-                    <strong>Symptoms:</strong> {disease.symptoms}
-                  </p>
-                  <p className="text-sm text-gray-200">
-                    <strong>Treatment:</strong> {disease.treatment}
-                  </p>
-                </div>
-              ))}
-              {message.data.recommendations && (
-                <div className="bg-green-500/20 rounded-xl p-4 border border-green-400/30 backdrop-blur-sm">
-                  <h5 className="font-semibold text-green-200 mb-2">Recommendations</h5>
-                  <ul className="space-y-1">
-                    {message.data.recommendations.map((rec: string, idx: number) => (
-                      <li key={idx} className="text-sm text-gray-200">
-                        • {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="text-xs text-gray-300 mt-2 text-right">{message.timestamp.toLocaleTimeString()}</div>
-        </div>
+    <div className="space-y-3">
+      <label className="text-sm font-medium text-white/90">Your Crops</label>
+      <input
+        type="text"
+        placeholder="Search crops..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+      />
+      <div className="flex flex-wrap gap-2">
+        {selectedCrops.map((crop) => (
+          <span
+            key={crop}
+            className="px-3 py-1 bg-emerald-500/30 border border-emerald-400/40 rounded-full text-sm text-white flex items-center gap-2"
+          >
+            {cropDatabase[crop].names[langCode]}
+            <X className="h-3 w-3 cursor-pointer" onClick={() => onRemoveCrop(crop)} />
+          </span>
+        ))}
+      </div>
+      <div className="max-h-40 overflow-y-auto space-y-1">
+        {filteredCrops.map(([name, crop]) => (
+          <div
+            key={name}
+            onClick={() => onAddCrop(name)}
+            className="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg cursor-pointer transition-colors text-white text-sm"
+          >
+            {crop.names[langCode]}
+          </div>
+        ))}
       </div>
     </div>
   );
-}
-/* ============================================================
-   CHAT INTERFACE COMPONENT
-   ============================================================ */
-interface ChatInterfaceProps {
-  moduleId: string;
-  moduleName: string;
-  icon: any;
-  model: string;
-  description: string;
-  colorScheme: ModuleColors;
-  messages: Message[];
-  isProcessing: boolean;
-  capturedImage?: string;
-  onSendMessage: (message: string) => void;
-  onUploadImage?: (file: File) => void;
-  showImageUpload?: boolean;
-}
-function ChatInterface({
+};
+
+// Module Card Component
+const ModuleCard = ({ id, name, icon: Icon, model, description, colorScheme, onClick }) => (
+  <div
+    onClick={onClick}
+    className={`${colorScheme.bg} backdrop-blur-xl border ${colorScheme.border} rounded-2xl p-6 cursor-pointer transition-all hover:scale-105 hover:shadow-2xl`}
+  >
+    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center mb-4`}>
+      <Icon className="h-6 w-6 text-white" />
+    </div>
+    <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
+    <p className="text-sm text-white/70 mb-3">{description}</p>
+    <div className={`inline-flex items-center px-3 py-1 rounded-full ${colorScheme.text} bg-white/10 text-xs font-medium`}>
+      {model}
+    </div>
+  </div>
+);
+
+// Chat Interface Component
+const ChatInterface = ({
   moduleId,
   moduleName,
   icon: Icon,
   model,
-  description,
   colorScheme,
   messages,
   isProcessing,
   capturedImage,
   onSendMessage,
   onUploadImage,
-  showImageUpload = false,
-}: ChatInterfaceProps) {
-  const [inputMessage, setInputMessage] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isProcessing]);
-  const handleSend = () => {
-    if (inputMessage.trim()) {
-      onSendMessage(inputMessage);
-      setInputMessage("");
+  showImageUpload
+}) => {
+  const [input, setInput] = useState('');
+  const fileInputRef = React.useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input.trim()) {
+      onSendMessage(input);
+      setInput('');
     }
   };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file && onUploadImage) {
       onUploadImage(file);
     }
   };
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-        {messages.length === 0 && (
-          <div className="text-center py-12">
-            <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${colorScheme.gradient} flex items-center justify-center shadow-lg`}>
-              <Icon className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">{moduleName}</h3>
-            <p className="text-gray-200">{description}</p>
-            <div className="mt-4 px-4 py-2 bg-white/10 rounded-lg inline-block backdrop-blur-sm">
-              <p className="text-sm text-white">Model: {model}</p>
+    <div className="flex flex-col h-full bg-black/30 backdrop-blur-xl">
+      <div className={`p-4 bg-gradient-to-r ${colorScheme.gradient} flex items-center gap-3`}>
+        <Icon className="h-6 w-6 text-white" />
+        <div>
+          <h3 className="text-lg font-bold text-white">{moduleName}</h3>
+          <p className="text-xs text-white/80">{model}</p>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div
+              className={`max-w-lg px-4 py-3 rounded-2xl ${
+                msg.type === 'user'
+                  ? 'bg-gradient-to-r ' + colorScheme.gradient + ' text-white'
+                  : 'bg-white/10 text-white border border-white/20'
+              }`}
+            >
+              {msg.data ? (
+                <div className="space-y-2">
+                  <p className="font-semibold">{msg.content}</p>
+                  {msg.data.caption && <p className="text-sm opacity-90">{msg.data.caption}</p>}
+                  {msg.data.health && (
+                    <div className="text-sm">
+                      <strong>Health:</strong> {msg.data.health}
+                    </div>
+                  )}
+                  {msg.data.diseases && msg.data.diseases.length > 0 && (
+                    <div className="mt-2">
+                      <strong className="text-sm">Detected Issues:</strong>
+                      {msg.data.diseases.map((disease, idx) => (
+                        <div key={idx} className="mt-2 p-2 bg-white/10 rounded-lg text-sm">
+                          <div className="font-semibold">{disease.name} ({disease.confidence}%)</div>
+                          <div>Severity: {disease.severity}</div>
+                          <div className="mt-1">{disease.symptoms}</div>
+                          <div className="mt-1 text-emerald-300">Treatment: {disease.treatment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {msg.data.recommendations && (
+                    <div className="mt-2">
+                      <strong className="text-sm">Recommendations:</strong>
+                      <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                        {msg.data.recommendations.map((rec, idx) => (
+                          <li key={idx}>{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p>{msg.content}</p>
+              )}
             </div>
           </div>
-        )}
-        {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} colorScheme={colorScheme} moduleId={moduleId} />
         ))}
         {isProcessing && (
-          <div className="flex justify-start mb-4">
-            <div className="flex items-center space-x-3">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br ${colorScheme.gradient} shadow-lg`}>
-                <Bot className="h-5 w-5 text-white" />
-              </div>
-              <div className="bg-white/10 rounded-2xl p-4 border border-white/20 backdrop-blur-sm shadow-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                  <span className="text-white">Processing with AI...</span>
-                </div>
-              </div>
+          <div className="flex justify-start">
+            <div className="px-4 py-3 bg-white/10 rounded-2xl border border-white/20 flex items-center gap-2 text-white">
+              <Loader className="h-4 w-4 animate-spin" />
+              <span>Processing...</span>
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
-      {capturedImage && (
-        <div className="p-4 bg-white/5 border-t border-white/10">
-          <img src={capturedImage} alt="Uploaded" className="max-w-xs rounded-lg border-2 border-white/30 shadow-lg" />
-        </div>
-      )}
-      <div className="p-6 bg-white/5 border-t border-white/10 backdrop-blur-sm">
-        {showImageUpload && (
-          <div className="mb-3">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isProcessing}
-              className={`w-full px-4 py-3 bg-gradient-to-r ${colorScheme.gradient} text-white rounded-xl hover:opacity-90 disabled:opacity-50 transition-all shadow-lg flex items-center justify-center space-x-2`}
-            >
-              <Upload className="h-5 w-5" />
-              <span>{isProcessing ? "Processing..." : "Upload Field Image"}</span>
-            </button>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-          </div>
-        )}
-        <div className="flex space-x-3">
+
+      <form onSubmit={handleSubmit} className="p-4 border-t border-white/20">
+        <div className="flex gap-2">
+          {showImageUpload && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-colors"
+              >
+                <Upload className="h-5 w-5" />
+              </button>
+            </>
+          )}
           <input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            disabled={isProcessing}
-            className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/60"
+            className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           <button
-            onClick={handleSend}
-            disabled={isProcessing || !inputMessage.trim()}
-            className={`px-6 py-2 bg-gradient-to-r ${colorScheme.gradient} text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-all shadow-lg`}
+            type="submit"
+            disabled={isProcessing}
+            className={`px-4 py-2 bg-gradient-to-r ${colorScheme.gradient} rounded-lg text-white hover:opacity-90 transition-opacity disabled:opacity-50`}
           >
             <Send className="h-5 w-5" />
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
-}
-/* ============================================================
-   MAIN APP COMPONENT
-   ============================================================ */
+};
+
+// AI Modules Configuration
 const aiModules = [
   {
     id: "image-analysis",
@@ -517,22 +370,27 @@ const aiModules = [
     },
   },
 ];
+
+// Main App Component
 export default function SmartFarmingApp() {
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>("english");
-  const [selectedCrops, setSelectedCrops] = useState<CropName[]>([]);
-  const [activeModule, setActiveModule] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('english');
+  const [selectedCrops, setSelectedCrops] = useState([]);
+  const [activeModule, setActiveModule] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [messages, setMessages] = useState<Record<string, Message[]>>({});
-  const [isProcessing, setIsProcessing] = useState<Record<string, boolean>>({});
-  const [capturedImages, setCapturedImages] = useState<Record<string, string>>({});
-  const addCrop = (crop: CropName) => {
+  const [messages, setMessages] = useState({});
+  const [isProcessing, setIsProcessing] = useState({});
+  const [capturedImages, setCapturedImages] = useState({});
+
+  const addCrop = (crop) => {
     if (!selectedCrops.includes(crop)) setSelectedCrops([...selectedCrops, crop]);
   };
-  const removeCrop = (crop: CropName) => {
+
+  const removeCrop = (crop) => {
     setSelectedCrops(selectedCrops.filter((c) => c !== crop));
   };
-  const addMessage = (moduleId: string, type: "user" | "bot", content: string, data?: any) => {
-    const newMessage: Message = {
+
+  const addMessage = (moduleId, type, content, data) => {
+    const newMessage = {
       id: Date.now(),
       type,
       content,
@@ -544,100 +402,93 @@ export default function SmartFarmingApp() {
       [moduleId]: [...(prev[moduleId] || []), newMessage],
     }));
   };
-  const handleSendMessage = (moduleId: string, message: string) => {
-    addMessage(moduleId, "user", message);
+
+  const handleSendMessage = (moduleId, message) => {
+    addMessage(moduleId, 'user', message);
     setIsProcessing((prev) => ({ ...prev, [moduleId]: true }));
+
     setTimeout(() => {
-      let response = "";
-      if (moduleId === "crop-advisor") {
-        const cropContext = selectedCrops.length > 0 ? ` for ${selectedCrops.join(", ")}` : "";
+      let response = '';
+
+      if (moduleId === 'crop-advisor') {
+        const cropContext = selectedCrops.length > 0 ? ` for ${selectedCrops.join(', ')}` : '';
         response = `For${cropContext}, here's expert advice: ${message}. Ensure proper irrigation, use balanced NPK fertilizer (10:26:26), and monitor for pests regularly. Organic manure is recommended at 10-15 tons/hectare.`;
-      } else if (moduleId === "text-translator") {
-        response = `Translation: This is a sample translation in your selected language. In production, real AI translation would occur here.`;
-      } else if (moduleId === "voice-assistant") {
-        response = "Audio advice generated. In production, you would hear farming advice in your selected language.";
-      } else if (moduleId === "video-guide") {
-        response = "Video generation initiated. This process may take a few minutes. In production, a farming technique video would be generated.";
+      } else if (moduleId === 'text-translator') {
+        response = `Translation: This is a sample translation in your selected language.`;
+      } else if (moduleId === 'voice-assistant') {
+        response = 'Audio advice generated successfully.';
+      } else if (moduleId === 'video-guide') {
+        response = 'Video generation initiated. Your farming guide will be ready shortly.';
       } else {
-        response = "Thank you for your query. In production, AI would provide detailed farming assistance.";
+        response = 'Thank you for your query. How else can I assist you?';
       }
-      addMessage(moduleId, "bot", response);
+
+      addMessage(moduleId, 'bot', response);
       setIsProcessing((prev) => ({ ...prev, [moduleId]: false }));
     }, 2000);
   };
-  const handleUploadImage = (moduleId: string, file: File) => {
+
+  const handleUploadImage = (moduleId, file) => {
     setIsProcessing((prev) => ({ ...prev, [moduleId]: true }));
     const reader = new FileReader();
     reader.onload = (e) => {
-      const imageDataUrl = e.target?.result as string;
+      const imageDataUrl = e.target.result;
       setCapturedImages((prev) => ({ ...prev, [moduleId]: imageDataUrl }));
-      addMessage(moduleId, "user", "Analyzing field image...");
+      addMessage(moduleId, 'user', 'Analyzing field image...');
+
       setTimeout(() => {
         const analysisResult = {
-          caption: "Healthy rice field with proper irrigation",
-          health: "Good",
-          soil_health: "Optimal",
+          caption: 'Healthy rice field with proper irrigation',
+          health: 'Good',
+          soil_health: 'Optimal',
           diseases: [
             {
-              name: "Rice Blast",
+              name: 'Rice Blast',
               confidence: 92,
-              severity: "High",
-              symptoms: "Diamond-shaped lesions on leaves",
-              treatment: "Apply Tricyclazole @ 0.6g/L",
+              severity: 'High',
+              symptoms: 'Diamond-shaped lesions on leaves',
+              treatment: 'Apply Tricyclazole @ 0.6g/L',
             },
           ],
           recommendations: [
-            "Maintain proper water level (2-5cm)",
-            "Apply balanced NPK fertilizer",
-            "Monitor for leaf blast symptoms",
-            "Ensure proper spacing between plants",
+            'Maintain proper water level (2-5cm)',
+            'Apply balanced NPK fertilizer',
+            'Monitor for leaf blast symptoms',
+            'Ensure proper spacing between plants',
           ],
         };
-        addMessage(moduleId, "bot", "Image Analysis Complete", analysisResult);
+
+        addMessage(moduleId, 'bot', 'Image Analysis Complete', analysisResult);
         setIsProcessing((prev) => ({ ...prev, [moduleId]: false }));
       }, 3000);
     };
     reader.readAsDataURL(file);
   };
+
   const activeModuleData = activeModule ? aiModules.find((m) => m.id === activeModule) : null;
+
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Gradient Background */}
       <style>{`
         @keyframes gradient {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.5);
-        }
       `}</style>
+      
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)`,
-          backgroundSize: "400% 400%",
-          animation: "gradient 15s ease infinite",
+          backgroundImage: 'linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)',
+          backgroundSize: '400% 400%',
+          animation: 'gradient 15s ease infinite',
         }}
       />
+
       <div className="relative z-10 flex h-screen">
-        {/* Sidebar */}
         <aside
-          className={`${
-            isSidebarOpen ? "w-80" : "w-0"
-          } transition-all duration-300 overflow-hidden bg-black/20 backdrop-blur-xl border-r border-white/20`}
+          className={`${isSidebarOpen ? 'w-80' : 'w-0'} transition-all duration-300 overflow-hidden bg-black/20 backdrop-blur-xl border-r border-white/20`}
         >
           <div className="p-6 space-y-6 h-full flex flex-col">
             <div className="flex items-center space-x-3">
@@ -649,55 +500,69 @@ export default function SmartFarmingApp() {
                 <p className="text-xs text-white/70">AI Assistant</p>
               </div>
             </div>
+
             <LanguageSelector selectedLanguage={selectedLanguage} onLanguageChange={setSelectedLanguage} />
+
             <div className="flex-1 overflow-hidden">
-              <CropSelector selectedCrops={selectedCrops} selectedLanguage={selectedLanguage} onAddCrop={addCrop} onRemoveCrop={removeCrop} />
+              <CropSelector
+                selectedCrops={selectedCrops}
+                selectedLanguage={selectedLanguage}
+                onAddCrop={addCrop}
+                onRemoveCrop={removeCrop}
+              />
             </div>
           </div>
         </aside>
-        {/* Main Content */}
+
         <main className="flex-1 flex flex-col overflow-hidden">
           <header className="p-4 bg-black/20 backdrop-blur-xl border-b border-white/20 flex items-center justify-between">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 text-white hover:bg-white/10 rounded-lg transition-all"
+              className="p-2 hover:bg-white/10 rounded-lg text-white transition-colors"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <h2 className="text-2xl font-bold text-white">{activeModuleData ? activeModuleData.name : "AI Farming Modules"}</h2>
+            <h2 className="text-2xl font-bold text-white">
+              {activeModuleData ? activeModuleData.name : 'AI Farming Modules'}
+            </h2>
             <div className="w-10" />
           </header>
-          <div className="flex-1 overflow-auto p-6 custom-scrollbar">
+
+          <div className="flex-1 overflow-auto p-6">
             {!activeModule ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
                 {aiModules.map((module) => (
-                  <ModuleCard key={module.id} {...module} isActive={false} onClick={() => setActiveModule(module.id)} />
+                  <ModuleCard key={module.id} {...module} onClick={() => setActiveModule(module.id)} />
                 ))}
               </div>
             ) : (
               activeModuleData && (
                 <div className="h-full max-w-6xl mx-auto">
-                  <button onClick={() => setActiveModule(null)} className="mb-4 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-all">
+                  <button
+                    onClick={() => setActiveModule(null)}
+                    className="mb-4 px-4 py-2 hover:bg-white/10 rounded-lg text-white transition-colors"
+                  >
                     ← Back to Modules
                   </button>
-                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl h-[calc(100%-4rem)] overflow-hidden">
+                  <div className="border border-white/20 rounded-2xl h-[calc(100%-4rem)] overflow-hidden">
                     <ChatInterface
                       moduleId={activeModuleData.id}
                       moduleName={activeModuleData.name}
                       icon={activeModuleData.icon}
                       model={activeModuleData.model}
-                      description={activeModuleData.description}
                       colorScheme={activeModuleData.colorScheme}
                       messages={messages[activeModuleData.id] || []}
                       isProcessing={isProcessing[activeModuleData.id] || false}
                       capturedImage={capturedImages[activeModuleData.id]}
                       onSendMessage={(msg) => handleSendMessage(activeModuleData.id, msg)}
                       onUploadImage={
-                        activeModuleData.id === "image-analysis" || activeModuleData.id === "visual-search"
+                        activeModuleData.id === 'image-analysis' || activeModuleData.id === 'visual-search'
                           ? (file) => handleUploadImage(activeModuleData.id, file)
                           : undefined
                       }
-                      showImageUpload={activeModuleData.id === "image-analysis" || activeModuleData.id === "visual-search"}
+                      showImageUpload={
+                        activeModuleData.id === 'image-analysis' || activeModuleData.id === 'visual-search'
+                      }
                     />
                   </div>
                 </div>
