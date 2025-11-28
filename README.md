@@ -1,402 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Farming AI Assistant</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          animation: {
-            'gradient': 'gradient 15s ease infinite',
-          },
-          keyframes: {
-            gradient: {
-              '0%, 100%': { backgroundPosition: '0% 50%' },
-              '50%': { backgroundPosition: '100% 50%' },
-            }
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PPT Prompt - Healthcare Presentation Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
-    }
-  </script>
-  <style>
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    .gradient-bg {
-      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-      background-size: 400% 400%;
-      animation: gradient 15s ease infinite;
-    }
-  </style>
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s backwards;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2a5298;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .prompt-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .prompt-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #2c3e50;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+            animation: popIn 0.6s ease-out backwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            background: #fff9e6;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .instructions h3 {
+            color: #f39c12;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 3px solid #667eea;
+        }
+
+        .footer p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: #24292e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .github-link:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: none;
+            animation: slideInRight 0.5s ease-out;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .content {
+                padding: 30px 20px;
+            }
+            .copy-btn {
+                position: static;
+                margin-top: 20px;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
-<body class="gradient-bg min-h-screen">
-  <div id="root"></div>
+<body>
+    <div class="toast" id="toast">✓ Prompt copied to clipboard!</div>
 
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide.min.js"></script>
-
-  <script type="text/babel">
-    const { Camera, Sparkles, Video, Music, Globe, Search, Leaf, Menu, Send, Upload, User, Bot, X, Plus } = lucide;
-
-    const languages = {
-      english: { name: "English", code: "en" },
-      tamil: { name: "தமிழ்", code: "ta" },
-      hindi: { name: "हिंदी", code: "hi" },
-      telugu: { name: "తెలుగు", code: "te" },
-      kannada: { name: "ಕನ್ನಡ", code: "kn" },
-      malayalam: { name: "മലയാളം", code: "ml" },
-    };
-
-    const cropDatabase = {
-      Rice: {
-        names: { en: "Rice", hi: "चावल", ta: "அரிசி", te: "బియ్యం", kn: "ಅಕ್ಕಿ", ml: "അരി" },
-        season: "Kharif/Rabi",
-        compatible: ["Green Gram", "Black Gram"],
-        incompatible: ["Wheat"],
-        category: "cereal",
-      },
-      Wheat: {
-        names: { en: "Wheat", hi: "गेहूं", ta: "கோதுமை", te: "గోధుమ", kn: "ಗೋಧಿ", ml: "ഗോതമ്പ്" },
-        season: "Rabi",
-        compatible: ["Mustard", "Gram"],
-        incompatible: ["Rice"],
-        category: "cereal",
-      },
-      Maize: {
-        names: { en: "Maize", hi: "मक्का", ta: "மக்காச்சோளம்", te: "మొక్కజొన్న", kn: "ಜೋಳ", ml: "ചോളം" },
-        season: "Kharif/Rabi",
-        compatible: ["Beans", "Pumpkin"],
-        incompatible: [],
-        category: "cereal",
-      },
-      Tomato: {
-        names: { en: "Tomato", hi: "टमाटर", ta: "தக்காளி", te: "టమాటో", kn: "ಟೊಮೇಟೊ", ml: "തക്കാളി" },
-        season: "Rabi/Summer",
-        compatible: ["Basil", "Marigold"],
-        incompatible: ["Potato"],
-        category: "vegetable",
-      },
-      Cotton: {
-        names: { en: "Cotton", hi: "कपास", ta: "பருத்தி", te: "పత్తి", kn: "ಹತ್ತಿ", ml: "പരുത്തി" },
-        season: "Kharif",
-        compatible: ["Marigold", "Chili"],
-        incompatible: [],
-        category: "fiber_crop",
-      },
-      Sugarcane: {
-        names: { en: "Sugarcane", hi: "गन्ना", ta: "கரும்பு", te: "చెరకు", kn: "ಕಬ್ಬು", ml: "കരിമ്പു" },
-        season: "Annual",
-        compatible: ["Potato", "Onion"],
-        incompatible: ["Wheat"],
-        category: "cash_crop",
-      },
-    };
-
-    const aiModules = [
-      {
-        id: "image-analysis",
-        name: "Field Image Analysis",
-        icon: Camera,
-        model: "microsoft/resnet-50",
-        description: "Analyze field images for disease detection",
-        colorScheme: { gradient: "from-pink-500 to-rose-500", bg: "bg-pink-500/20", border: "border-pink-400/40" },
-      },
-      {
-        id: "crop-advisor",
-        name: "Intelligent Crop Advisor",
-        icon: Sparkles,
-        model: "microsoft/DialoGPT",
-        description: "Get farming advice and recommendations",
-        colorScheme: { gradient: "from-amber-500 to-orange-500", bg: "bg-amber-500/20", border: "border-amber-400/40" },
-      },
-      {
-        id: "video-guide",
-        name: "Video Farming Guides",
-        icon: Video,
-        model: "Video Generation AI",
-        description: "Visual farming demonstrations",
-        colorScheme: { gradient: "from-cyan-500 to-sky-500", bg: "bg-cyan-500/20", border: "border-cyan-400/40" },
-      },
-      {
-        id: "voice-assistant",
-        name: "Voice Assistant",
-        icon: Music,
-        model: "suno/bark",
-        description: "Listen to advice in your language",
-        colorScheme: { gradient: "from-emerald-500 to-green-500", bg: "bg-emerald-500/20", border: "border-emerald-400/40" },
-      },
-      {
-        id: "text-translator",
-        name: "Multilingual Translator",
-        icon: Globe,
-        model: "Helsinki-NLP/opus-mt",
-        description: "Translate farming content",
-        colorScheme: { gradient: "from-violet-500 to-purple-500", bg: "bg-violet-500/20", border: "border-violet-400/40" },
-      },
-      {
-        id: "visual-search",
-        name: "Visual Crop Search",
-        icon: Search,
-        model: "openai/clip-vit",
-        description: "Search crops using images",
-        colorScheme: { gradient: "from-fuchsia-500 to-pink-500", bg: "bg-fuchsia-500/20", border: "border-fuchsia-400/40" },
-      },
-    ];
-
-    function SmartFarmingApp() {
-      const [selectedLanguage, setSelectedLanguage] = React.useState("english");
-      const [selectedCrops, setSelectedCrops] = React.useState([]);
-      const [activeModule, setActiveModule] = React.useState(null);
-      const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
-      const [messages, setMessages] = React.useState({});
-      const [isProcessing, setIsProcessing] = React.useState({});
-      const [inputMessage, setInputMessage] = React.useState("");
-      const fileInputRef = React.useRef(null);
-
-      const addCrop = (crop) => {
-        if (!selectedCrops.includes(crop)) setSelectedCrops([...selectedCrops, crop]);
-      };
-
-      const removeCrop = (crop) => {
-        setSelectedCrops(selectedCrops.filter((c) => c !== crop));
-      };
-
-      const addMessage = (moduleId, type, content, data = null) => {
-        const newMessage = { id: Date.now(), type, content, data, timestamp: new Date() };
-        setMessages((prev) => ({ ...prev, [moduleId]: [...(prev[moduleId] || []), newMessage] }));
-      };
-
-      const handleSendMessage = (moduleId, message) => {
-        if (!message.trim()) return;
-        addMessage(moduleId, "user", message);
-        setIsProcessing((prev) => ({ ...prev, [moduleId]: true }));
-        
-        setTimeout(() => {
-          const cropContext = selectedCrops.length > 0 ? ` for ${selectedCrops.join(", ")}` : "";
-          let response = `For${cropContext}, here's expert advice: ${message}. Ensure proper irrigation, balanced NPK fertilizer, and regular pest monitoring.`;
-          
-          addMessage(moduleId, "bot", response);
-          setIsProcessing((prev) => ({ ...prev, [moduleId]: false }));
-        }, 2000);
-      };
-
-      const handleUploadImage = (moduleId, file) => {
-        setIsProcessing((prev) => ({ ...prev, [moduleId]: true }));
-        const reader = new FileReader();
-        reader.onload = () => {
-          addMessage(moduleId, "user", "Analyzing image...");
-          setTimeout(() => {
-            const result = {
-              caption: "Healthy rice field with proper irrigation",
-              health: "Good",
-              soil_health: "Optimal",
-              diseases: [{ name: "Rice Blast", confidence: 92, severity: "High", symptoms: "Diamond-shaped lesions", treatment: "Apply Tricyclazole @ 0.6g/L" }],
-              recommendations: ["Maintain water level (2-5cm)", "Apply NPK fertilizer", "Monitor for pests"]
-            };
-            addMessage(moduleId, "bot", "Analysis Complete", result);
-            setIsProcessing((prev) => ({ ...prev, [moduleId]: false }));
-          }, 2000);
-        };
-        reader.readAsDataURL(file);
-      };
-
-      const activeModuleData = activeModule ? aiModules.find((m) => m.id === activeModule) : null;
-
-      return (
-        <div className="min-h-screen flex">
-          <aside className={`${isSidebarOpen ? "w-80" : "w-0"} transition-all duration-300 bg-black/20 backdrop-blur-xl border-r border-white/20 overflow-hidden`}>
-            <div className="p-6 space-y-6 h-screen flex flex-col">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center">
-                  <Leaf className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-white">Smart Farming</h1>
-                  <p className="text-xs text-white/70">AI Assistant</p>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm text-white/80 mb-2 block">Language</label>
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
-                >
-                  {Object.entries(languages).map(([key, lang]) => (
-                    <option key={key} value={key} className="bg-gray-900">{lang.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex-1 overflow-hidden">
-                <label className="text-sm text-white/80 mb-2 block">Select Crops</label>
-                {selectedCrops.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {selectedCrops.map((crop) => (
-                      <span key={crop} className="px-2 py-1 bg-emerald-500/30 rounded-full text-xs text-white flex items-center gap-1">
-                        {cropDatabase[crop].names[languages[selectedLanguage].code]}
-                        <X className="h-3 w-3 cursor-pointer" onClick={() => removeCrop(crop)} />
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <div className="space-y-2 overflow-y-auto scrollbar-hide max-h-64">
-                  {Object.entries(cropDatabase).filter(([name]) => !selectedCrops.includes(name)).map(([name, crop]) => (
-                    <button
-                      key={name}
-                      onClick={() => addCrop(name)}
-                      className="w-full text-left p-3 bg-white/5 border border-white/20 rounded-lg hover:bg-white/10 transition-all"
-                    >
-                      <div className="text-white font-medium">{crop.names[languages[selectedLanguage].code]}</div>
-                      <div className="text-xs text-white/60">{crop.season} • {crop.category}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          <main className="flex-1 flex flex-col">
-            <header className="p-4 bg-black/20 backdrop-blur-xl border-b border-white/20 flex items-center justify-between">
-              <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-white hover:bg-white/10 rounded-lg">
-                <Menu className="h-5 w-5" />
-              </button>
-              <h2 className="text-2xl font-bold text-white">{activeModuleData ? activeModuleData.name : "AI Farming Modules"}</h2>
-              <div className="w-10" />
-            </header>
-
-            <div className="flex-1 overflow-auto p-6">
-              {!activeModule ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-                  {aiModules.map((module) => (
-                    <div
-                      key={module.id}
-                      onClick={() => setActiveModule(module.id)}
-                      className={`bg-gradient-to-br ${module.colorScheme.bg} backdrop-blur-xl border ${module.colorScheme.border} rounded-2xl p-6 cursor-pointer hover:scale-105 transition-all`}
-                    >
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${module.colorScheme.gradient} flex items-center justify-center mb-4`}>
-                        <module.icon className="h-8 w-8 text-white" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white mb-2">{module.name}</h3>
-                      <p className="text-sm text-white/70 mb-3">{module.description}</p>
-                      <span className="text-xs text-white/50">{module.model}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : activeModuleData && (
-                <div className="h-full max-w-6xl mx-auto flex flex-col">
-                  <button onClick={() => setActiveModule(null)} className="mb-4 px-4 py-2 text-white hover:bg-white/10 rounded-lg w-fit">
-                    ← Back to Modules
-                  </button>
-                  <div className="flex-1 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden flex flex-col">
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
-                      {(!messages[activeModuleData.id] || messages[activeModuleData.id].length === 0) && (
-                        <div className="text-center py-12">
-                          <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${activeModuleData.colorScheme.gradient} flex items-center justify-center`}>
-                            <activeModuleData.icon className="h-10 w-10 text-white" />
-                          </div>
-                          <h3 className="text-xl font-bold text-white mb-2">{activeModuleData.name}</h3>
-                          <p className="text-white/70">{activeModuleData.description}</p>
-                        </div>
-                      )}
-
-                      {(messages[activeModuleData.id] || []).map((msg) => (
-                        <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
-                          <div className={`flex items-start space-x-3 max-w-3xl ${msg.type === "user" ? "flex-row-reverse space-x-reverse" : ""}`}>
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${msg.type === "user" ? "bg-blue-500" : `bg-gradient-to-br ${activeModuleData.colorScheme.gradient}`}`}>
-                              {msg.type === "user" ? <User className="h-5 w-5 text-white" /> : <Bot className="h-5 w-5 text-white" />}
-                            </div>
-                            <div className={`rounded-2xl p-4 ${msg.type === "user" ? "bg-blue-500/30 border border-blue-400/40" : `${activeModuleData.colorScheme.bg} border ${activeModuleData.colorScheme.border}`}`}>
-                              <div className="text-white">{msg.content}</div>
-                              {msg.data && (
-                                <div className="mt-3 space-y-2">
-                                  <div className="text-sm text-white/90">{msg.data.caption}</div>
-                                  {msg.data.diseases?.map((d, i) => (
-                                    <div key={i} className="bg-red-500/20 p-3 rounded-lg text-sm">
-                                      <div className="font-semibold text-white">{d.name} ({d.confidence}%)</div>
-                                      <div className="text-white/80">{d.symptoms}</div>
-                                      <div className="text-emerald-300 mt-1">Treatment: {d.treatment}</div>
-                                    </div>
-                                  ))}
-                                  {msg.data.recommendations && (
-                                    <div className="bg-green-500/20 p-3 rounded-lg">
-                                      <div className="font-semibold text-white mb-1">Recommendations:</div>
-                                      {msg.data.recommendations.map((r, i) => (
-                                        <div key={i} className="text-sm text-white/80">• {r}</div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              <div className="text-xs text-white/50 mt-2">{msg.timestamp.toLocaleTimeString()}</div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
-                      {isProcessing[activeModuleData.id] && (
-                        <div className="flex justify-start">
-                          <div className="bg-white/10 rounded-2xl p-4 border border-white/20">
-                            <div className="flex items-center space-x-2 text-white">
-                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                              <span>Processing...</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-4 bg-white/5 border-t border-white/10">
-                      {(activeModuleData.id === "image-analysis" || activeModuleData.id === "visual-search") && (
-                        <div className="mb-3">
-                          <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className={`w-full py-3 bg-gradient-to-r ${activeModuleData.colorScheme.gradient} text-white rounded-xl flex items-center justify-center gap-2 hover:opacity-90`}
-                          >
-                            <Upload className="h-5 w-5" />
-                            Upload Image
-                          </button>
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleUploadImage(activeModuleData.id, e.target.files[0])}
-                            className="hidden"
-                          />
-                        </div>
-                      )}
-                      <div className="flex gap-2">
-                        <input
-                          value={inputMessage}
-                          onChange={(e) => setInputMessage(e.target.value)}
-                          onKeyPress={(e) => e.key === "Enter" && handleSendMessage(activeModuleData.id, inputMessage) && setInputMessage("")}
-                          placeholder="Type your message..."
-                          className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/60"
-                        />
-                        <button
-                          onClick={() => { handleSendMessage(activeModuleData.id, inputMessage); setInputMessage(""); }}
-                          className={`px-6 py-2 bg-gradient-to-r ${activeModuleData.colorScheme.gradient} rounded-lg`}
-                        >
-                          <Send className="h-5 w-5 text-white" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </main>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 AI PPT Prompt</h1>
+            <p>Professional AI Healthcare Presentation Generator</p>
         </div>
-      );
-    }
 
-    ReactDOM.render(<SmartFarmingApp />, document.getElementById("root"));
-  </script>
+        <div class="content">
+            <div class="section">
+                <h2>📋 The Prompt</h2>
+                <div class="prompt-box">
+                    <button class="copy-btn" onclick="copyPrompt()">
+                        <span>📋</span>
+                        Copy Prompt
+                    </button>
+                    <div class="prompt-text" id="promptText">Create a 3 slide presentation of size 16:9 on the topic how is ai used in healthcare.
+
+Slide 1: Introduction about ai in healthcare and especially about ai health and disease analytics and ai robot surgery with a very good photorealistic image
+
+Slide 2: Brief detail about ai health and disease analytics and ai robot surgery with small photorealistic images
+
+Slide 3: More technologies of ai in healthcare and conclusion with informative images
+
+These should have photorealistic images and very good and advanced animations and transitions</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>✨ What This Prompt Creates</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>16:9 Presentation</h3>
+                        <p>Professional widescreen format perfect for any display</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🎨</div>
+                        <h3>Photorealistic Images</h3>
+                        <p>High-quality visuals for healthcare AI topics</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✨</div>
+                        <h3>Advanced Animations</h3>
+                        <p>Smooth transitions and professional effects</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="instructions">
+                    <h3>🚀 How to Use This Prompt</h3>
+                    <ol>
+                        <li><strong>Copy the prompt</strong> using the button above</li>
+                        <li><strong>Paste it into any AI tool</strong> like Claude, ChatGPT, or other AI assistants that can create presentations</li>
+                        <li><strong>Download or customize</strong> the generated presentation as needed</li>
+                        <li><strong>Present with confidence</strong> using the professional slides created</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📚 Presentation Contents</h2>
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; line-height: 1.8;">
+                    <p><strong>Slide 1:</strong> Introduction to AI in Healthcare with focus on health analytics and robotic surgery</p>
+                    <p><strong>Slide 2:</strong> Detailed exploration of AI health analytics and robotic surgery applications</p>
+                    <p><strong>Slide 3:</strong> Additional AI healthcare technologies and comprehensive conclusion</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>AI PPT Prompt</strong> - Generate Professional Healthcare AI Presentations</p>
+            <p>Made with ❤️ for educators, students, and healthcare professionals</p>
+            <a href="https://github.com" class="github-link" target="_blank">
+                ⭐ View on GitHub
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function copyPrompt() {
+            const promptText = document.getElementById('promptText').innerText;
+            
+            navigator.clipboard.writeText(promptText).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }).catch(err => {
+                alert('Failed to copy. Please copy manually.');
+            });
+        }
+    </script>
 </body>
 </html>
